@@ -1,0 +1,30 @@
+NAME = test
+LIB_NAME = libasm.a
+SRC = helloWorld.s
+ASM_DIR = asm
+ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
+OBJ = $(ASM_SRC:.s=.o)
+CSRC = main.c
+HEADER = mylib.h
+COBJ = $(CSRC:.c=.o)
+
+all: $(LIB_NAME) $(COBJ) $(HEADER)
+	gcc $(COBJ) -L. -lasm -o $(NAME)
+
+$(LIB_NAME): $(OBJ)
+	ar rcs $@ $^
+
+%.o: %.s
+	nasm -f elf64 $< -o $@
+
+%.o: %.c 
+	gcc -c $< -o $@
+
+clean:
+	rm -f $(OBJ) $(COBJ)
+
+fclean: clean
+	rm -f $(LIB_NAME) prog
+
+re: fclean all
+
