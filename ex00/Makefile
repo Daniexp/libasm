@@ -1,4 +1,4 @@
-NAME = myprog
+NAME = basicReturnCode
 SRC = main.s
 OBJ = $(SRC:.s=.o)
 
