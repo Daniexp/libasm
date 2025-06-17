@@ -12,7 +12,14 @@ int main() {
 	char *str2 = malloc(ft_strlen(str) + 1);
 	str2 = 	ft_strcpy(str2, str);
 	printf("Comparison: %d\n", ft_strcmp(str, str2));
-
 	free(strCpy);
+	free(str2);
+
+	//Test write
+	/*
+	char *writeStr = "Hello\n";
+	ft_write(1, writeStr, 6);
+	*/
+	
 	return 0;
 }
