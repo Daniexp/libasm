@@ -9,6 +9,9 @@ int main() {
 	printf("Copied string: %s\n", strCpy);
 	char big[20];
 	printf("%s\n", ft_strcpy(big, str));
+	char *str2 = malloc(ft_strlen(str) + 1);
+	str2 = 	ft_strcpy(str2, str);
+	printf("Comparison: %d\n", ft_strcmp(str, str2));
 
 	free(strCpy);
 	return 0;
