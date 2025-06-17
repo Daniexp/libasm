@@ -1,8 +1,10 @@
 NAME = test
 LIB_NAME = libasm.a
-SRC = helloWorld.s \
-      ft_strlen.s \
-      ft_strcpy.s 
+SRC =	helloWorld.s \
+	ft_strlen.s \
+	ft_strcpy.s  \
+	ft_strcmp.s
+
 ASM_DIR = asm
 ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
 OBJ = $(ASM_SRC:.s=.o)

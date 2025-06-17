@@ -1,4 +1,3 @@
-extern ft_strlen
 ; char *strcpy(char *dest, const char *src)
 
 section .text
