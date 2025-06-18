@@ -5,7 +5,8 @@ SRC =	helloWorld.s \
 	ft_strcpy.s  \
 	ft_strcmp.s \
 	ft_write.s \
-	ft_read.s
+	ft_read.s \
+	ft_strdup.s
 
 ASM_DIR = asm
 ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
