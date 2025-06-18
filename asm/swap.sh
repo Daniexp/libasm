@@ -1,5 +1,5 @@
 #!/bin/bash
 
-for file in ./*.s; do
-	mv "$file" "${file%.s}.asm"
+for file in ./*.asm; do
+	mv "$file" "${file%.asm}.s"
 done

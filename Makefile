@@ -1,14 +1,15 @@
 NAME = test
 LIB_NAME = libasm.a
-SRC =	helloWorld.asm \
-	ft_strlen.asm \
-	ft_strcpy.asm  \
-	ft_strcmp.asm \
-	ft_write.asm
+SRC =	helloWorld.s \
+	ft_strlen.s \
+	ft_strcpy.s  \
+	ft_strcmp.s \
+	ft_write.s \
+	ft_read.s
 
 ASM_DIR = asm
 ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
-OBJ = $(ASM_SRC:.asm=.o)
+OBJ = $(ASM_SRC:.s=.o)
 CSRC = main.c
 HEADER = mylib.h
 COBJ = $(CSRC:.c=.o)
@@ -19,7 +20,7 @@ all: $(LIB_NAME) $(COBJ) $(HEADER)
 $(LIB_NAME): $(OBJ)
 	ar rcs $@ $^
 
-%.o: %.asm
+%.o: %.s
 	nasm -f elf64 $< -o $@
 
 %.o: %.c 
