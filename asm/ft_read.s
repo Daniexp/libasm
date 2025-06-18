@@ -8,7 +8,7 @@ ft_read:
 
 	cmp rax, 0
 	jbe .end
-.error
+.error:
 	neg rax
 	mov rdi, rax
 	call __errno_location wrt ..plt
