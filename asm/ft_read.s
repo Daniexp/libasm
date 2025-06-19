@@ -7,7 +7,7 @@ ft_read:
 	syscall
 
 	cmp rax, 0
-	jbe .end
+	jge .end
 .error:
 	neg rax
 	mov rdi, rax
