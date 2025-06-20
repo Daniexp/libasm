@@ -32,10 +32,8 @@ int main() {
 	printf("example.txt: %s\n", buffer);
 
 	//Test strdup
-	/*
 	strCpy = ft_strdup(str);
-	printf("Copied String: %d", strCpy);
+	printf("Copied String: %s", strCpy);
 	free(strCpy);
-	*/
 	return 0;
 }
