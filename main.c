@@ -1,12 +1,40 @@
 #include "mylib.h"
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
+
+void printLine()
+{
+	printf("---------------------\n");
+}
+
+void printHeader(char *str)
+{
+	if (!str)
+		return;
+	printf("Test %s\n", str);
+	printLine();
+}
+
+void test_strlen(char *str)
+{
+	printHeader("ft_strlen");
+	printf("String -> %s", str);
+	printf("ft_strlen -> %d\n", ft_strlen(str));
+	printf("strlen -> %d\n", strlen(str));
+	printLine();
+}
+
+void test_strCpy(char *str)
+{
+	printHeader("ft_strCpy");
+}
 
 int main() {
-	helloWorld();
 	//Test strlen
 	char *str = "Hello, World!\n";
-	printf("%d\n", ft_strlen(str));
+	test_strlen(str);
+	test_strlen("");
 	//Test strcpy
 	char *strCpy = malloc(ft_strlen(str) + 1);
 	strCpy = ft_strcpy(strCpy, str);
