@@ -12,7 +12,7 @@ ASM_DIR = asm
 ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
 OBJ = $(ASM_SRC:.s=.o)
 CSRC = main.c
-HEADER = mylib.h
+HEADER = libasm.h
 COBJ = $(CSRC:.c=.o)
 
 all: $(LIB_NAME) $(COBJ) $(HEADER)
