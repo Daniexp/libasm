@@ -1,7 +1,11 @@
-#include "mylib.h"
+#include "libasm.h"
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
 
 void printLine()
 {
@@ -14,6 +18,12 @@ void printHeader(char *str)
 		return;
 	printf("Test %s\n", str);
 	printLine();
+}
+
+void printErrno(int ret)
+{
+	if (ret < 0)
+		printf("Errno ->%s\n", strerror(errno));
 }
 
 void test_strlen(char *str)
@@ -40,6 +50,31 @@ void test_strcpy(char *str)
 	free(strCpy2);
 }
 
+void test_strcmp(char *str1, char *str2)
+{
+	printHeader("ft_strcmp");
+	printf("String 1 -> %s\n", str1);
+	printf("String 2 -> %s\n", str2);
+	printf("ft_strcmp -> %d\n", ft_strcmp(str1, str2));
+	printf("strcmp -> %d\n", strcmp(str1, str2));
+	printLine();
+}
+
+void test_write(int fd, char *str, int len)
+{
+	printHeader("ft_write");
+	printLine();
+	printf("Fd -> %d\nString -> %s\nLen -> %d\n", fd, str, len);
+	int ret;
+	ret = ft_write(fd, str, len);
+	printf("\nft_write return -> %d\n", ret);
+	printErrno(ret);
+	ret = write(fd, str, len);
+	printf("\nwrite return -> %d\n", ret);
+	printErrno(ret);
+	printLine();
+}
+
 int main() {
 	//Test strlen
 	test_strlen("Hello, World!");
@@ -47,16 +82,19 @@ int main() {
 	//Test strcpy
 	test_strcpy("Hello, World!");
 	test_strcpy("");
-	/*
 	//Test strcmp
-	char *str2 = malloc(ft_strlen(str) + 1);
-	str2 = 	ft_strcpy(str2, str);
-	printf("Comparison: %d\n", ft_strcmp(str, str2));
-
+	test_strcmp("Hello", "Hello");
+	test_strcmp("", "");
+	test_strcmp("testing1", "testing2");
+	test_strcmp("Testing", "testing");
 	//Test write
-	ft_write(1, str, ft_strlen(str));
-	
+	test_write(1, "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(1, "Hello, World!", 5);
+	test_write(1, "Hello\0, World!", ft_strlen("Hello, World!") * 2);
+	test_write(0, "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(-1, "Hello, World!", ft_strlen("Hello, World!"));
 
+	/*
 	//Test read
 	int fd = open("example.txt", O_RDONLY);
 	char buffer[6];
