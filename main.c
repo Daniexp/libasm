@@ -37,17 +37,22 @@ void test_strlen(char *str)
 
 void test_strcpy(char *str)
 {
-	char *strCpy = malloc(strlen(str) + 1);
-	char *strCpy2 = malloc(strlen(str) + 1);
+	int len = strlen(str);
+	char *strCpy = malloc(len + 1);
+	if (!strCpy)
+		return ;
+	memset(strCpy, '\0', len);
 
 	printHeader("ft_strCpy");
 	printf("Original -> %s\n", str);
 	printf("ft_strcpy -> %s\n", ft_strcpy(strCpy, str));
-	printf("strcpy -> %s\n", strcpy(strCpy2, str));
+
+	memset(strCpy, '\0', len);
+
+	printf("strcpy -> %s\n", strcpy(strCpy, str));
 	printLine();
 
 	free(strCpy);
-	free(strCpy2);
 }
 
 void test_strcmp(char *str1, char *str2)
@@ -60,7 +65,7 @@ void test_strcmp(char *str1, char *str2)
 	printLine();
 }
 
-void test_write(int fd, char *str, int len)
+void test_write(int fd, int fd2, char *str, int len)
 {
 	printHeader("ft_write");
 	printLine();
@@ -69,10 +74,39 @@ void test_write(int fd, char *str, int len)
 	ret = ft_write(fd, str, len);
 	printf("\nft_write return -> %d\n", ret);
 	printErrno(ret);
-	ret = write(fd, str, len);
+	ret = write(fd2, str, len);
 	printf("\nwrite return -> %d\n", ret);
 	printErrno(ret);
 	printLine();
+}
+
+void test_read(int fd, int fd2, int buffSize, int nBytes)
+{
+	char *buff = malloc(buffSize + 1);
+	if (!buff)
+		return ;
+	memset(buff, '\0', buffSize);
+
+	printHeader("ft_read");
+	printf("Fd -> %d\nFd2 -> %d\nBuff Size -> %d\nRead bytes -> %d\n", fd, fd2, buffSize, nBytes);
+
+	int ret;
+	ret = ft_read(fd, buff, buffSize);
+
+	printf("ft_read return -> %d\n", ret);
+	printf("ft_read Buff -> %s\n", buff);
+	printErrno(ret);
+
+	memset(buff, '\0', buffSize);
+
+	ret = read(fd2, buff, buffSize);
+
+	printf("read return -> %d\n", ret);
+	printf("read Buff -> %s\n", buff);
+	printErrno(ret);
+
+	printLine();
+	free(buff);
 }
 
 int openError(int *fds)
@@ -83,38 +117,48 @@ int openError(int *fds)
 			error = 1;
 	return error;
 }
-int *closeTestFiles(int *fds)
+
+int *closeTestFiles(int *fds, int len)
 {
 	if (!fds)
 		return fds;
-	for (int j = 0; j <= 2; j++)
+	for (int j = 0; j < len; j++)
 		close(fds[j]);
 	free(fds);
 	fds = NULL;
-	remove("read.txt");
-	remove("write.txt");
-	remove("readWrite.txt");
 	return fds;
 }
 
-int	*startTestFiles()
+void	deleteTestFiles(char **filenames, int len)
 {
-	int *fds = malloc(3);
+	for (int i = 0; i < len; i++)
+		remove(filenames[i]);
+}
+
+int	*startTestFiles(char **filenames, int len)
+{
+	int *fds = malloc(len);
 	if (fds)
-	{
-		fds[0] = open("read.txt", O_RDONLY | O_CREAT);
-		fds[1] = open("write.txt", O_WRONLY | O_CREAT);
-		fds[2] = open("readWrite.txt", O_RDWR | O_CREAT);
-	}
+		for (int i = 0; i < len; i++)
+			fds[i] = open(filenames[i], O_RDONLY | O_CREAT);
 	if (openError(fds))
-		fds = closeTestFiles(fds);
+	{
+		fds = closeTestFiles(fds, len);
+		deleteTestFiles(filenames, len);
+	}
 	return fds;
 }
 
 int main() {
-	int *fds = startTestFiles();
+	int files = 3;
+	char *filenames[3] = {"read.txt", "write.txt", "readWrite.txt"};
+	int *fds = startTestFiles(filenames, files);
 	if (!fds)
-		return printf("Issue creating test files"), 1;
+		return printf("Issue creating test files\n"), 1;
+	char *filenamesDup[3] = {"read2.txt", "write2.txt", "readWrite2.txt"};
+	int *fds2 = startTestFiles(filenamesDup, files);
+	if (!fds2)
+		return closeTestFiles(fds, files), printf("Issue opening duplicate test files\n"), 1;
 
 	//Test strlen
 	test_strlen("Hello, World!");
@@ -128,26 +172,34 @@ int main() {
 	test_strcmp("testing1", "testing2");
 	test_strcmp("Testing", "testing");
 	//Test write
-	test_write(1, "Hello, World!", ft_strlen("Hello, World!"));
-	test_write(1, "Hello, World!", 5);
-	test_write(1, "Hello\0, World!", ft_strlen("Hello, World!") * 2);
-	test_write(0, "Hello, World!", ft_strlen("Hello, World!"));
-	test_write(-1, "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(1, 1, "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(1, 1, "Hello, World!", 5);
+	test_write(1, 1, "Hello\0, World!", ft_strlen("Hello, World!") * 2);
+	test_write(0, 0, "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(-1, -1, "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(fds[0], fds2[0], "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(fds[1], fds2[1], "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(fds[2], fds2[2], "Hello, World!", ft_strlen("Hello, World!"));
 
-	/*
 	//Test read
-	int fd = open("example.txt", O_RDONLY);
-	char buffer[6];
-	printf("Bytes readed: %d\n", ft_read(fd, buffer, 5));
-	buffer[5] = '\0';
-	printf("example.txt: %s\n", buffer);
+	test_read(fds[0], fds2[0], 13, 13);
+	test_read(fds[1], fds2[1], 13, 13);
+	test_read(fds[2], fds2[2], 13, 13);
+	test_read(fds[2], fds2[2], 5, 5);
+	test_read(fds[2], fds2[2], 50, 10);
+	test_read(fds[2], fds2[2], 5, 50);
+	test_read(-1, -1, 5, 5);
 
 	//Test strdup
+	/*
 	strCpy = ft_strdup(str);
 	printf("Copied String: %s", strCpy);
 	free(strCpy);
 	*/
 
-	closeTestFiles(fds);
+	closeTestFiles(fds, files);
+	deleteTestFiles(filenames, files);
+	closeTestFiles(fds2, files);
+	deleteTestFiles(filenamesDup, files);
 	return 0;
 }
