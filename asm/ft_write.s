@@ -6,14 +6,14 @@ ft_write:
 	syscall
 
 	cmp rax, 0
-	jbe .end
+	jge .end
 .error:
 	neg rax
 	mov rdi, rax
 	call __errno_location wrt ..plt
 	mov [rax], edi
-
 	mov rax, -1
+
 	ret
 .end:
 	ret
