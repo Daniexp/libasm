@@ -75,6 +75,42 @@ void test_write(int fd, char *str, int len)
 	printLine();
 }
 
+int openError(int *fds)
+{
+	int error = 0;
+	for (int i = 0; i <= 2 && !error; i++)
+		if (fds[i] == -1)
+			error = 1;
+	return error;
+}
+int *closeTestFiles(int *fds)
+{
+	if (!fds)
+		return fds;
+	for (int j = 0; j <= 2; j++)
+		close(fds[j]);
+	free(fds);
+	fds = NULL;
+	remove("read.txt");
+	remove("write.txt");
+	remove("readWrite.txt");
+	return fds;
+}
+
+int	*startTestFiles()
+{
+	int *fds = malloc(3);
+	if (fds)
+	{
+		fds[0] = open("read.txt", O_RDONLY | O_CREAT);
+		fds[1] = open("write.txt", O_WRONLY | O_CREAT);
+		fds[2] = open("readWrite.txt", O_RDWR | O_CREAT);
+	}
+	if (openError(fds))
+		fds = closeTestFiles(fds);
+	return fds;
+}
+
 int main() {
 	//Test strlen
 	test_strlen("Hello, World!");
@@ -94,6 +130,9 @@ int main() {
 	test_write(0, "Hello, World!", ft_strlen("Hello, World!"));
 	test_write(-1, "Hello, World!", ft_strlen("Hello, World!"));
 
+	int *fds = startTestFiles();
+	if (!fds)
+		return printf("Issue creating test files"), 1;
 	/*
 	//Test read
 	int fd = open("example.txt", O_RDONLY);
@@ -107,5 +146,6 @@ int main() {
 	printf("Copied String: %s", strCpy);
 	free(strCpy);
 	*/
+	closeTestFiles(fds);
 	return 0;
 }
