@@ -23,7 +23,7 @@ void printHeader(char *str)
 void printErrno(int ret)
 {
 	if (ret < 0)
-		printf("Errno ->%s\n", strerror(errno));
+		printf("Errno -> %s\n", strerror(errno));
 }
 
 void test_strlen(char *str)
