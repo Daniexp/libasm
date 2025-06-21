@@ -112,6 +112,10 @@ int	*startTestFiles()
 }
 
 int main() {
+	int *fds = startTestFiles();
+	if (!fds)
+		return printf("Issue creating test files"), 1;
+
 	//Test strlen
 	test_strlen("Hello, World!");
 	test_strlen("");
@@ -130,9 +134,6 @@ int main() {
 	test_write(0, "Hello, World!", ft_strlen("Hello, World!"));
 	test_write(-1, "Hello, World!", ft_strlen("Hello, World!"));
 
-	int *fds = startTestFiles();
-	if (!fds)
-		return printf("Issue creating test files"), 1;
 	/*
 	//Test read
 	int fd = open("example.txt", O_RDONLY);
@@ -146,6 +147,7 @@ int main() {
 	printf("Copied String: %s", strCpy);
 	free(strCpy);
 	*/
+
 	closeTestFiles(fds);
 	return 0;
 }
