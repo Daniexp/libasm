@@ -13,12 +13,13 @@ ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
 OBJ = $(ASM_SRC:.s=.o)
 CSRC = main.c
 HEADER = libasm.h
+CFLAGS = -Wextra -Werror -Wall
 COBJ = $(CSRC:.c=.o)
 
 all: $(NAME) 
 
 $(NAME): $(LIB_NAME) $(COBJ) $(HEADER)
-	gcc $(COBJ) -L. -lasm -o $(NAME)
+	gcc $(CFLAGS) $(COBJ) -L. -lasm -o $(NAME)
 
 $(LIB_NAME): $(OBJ)
 	ar rcs $@ $^
@@ -27,7 +28,7 @@ $(LIB_NAME): $(OBJ)
 	nasm -f elf64 $< -o $@
 
 %.o: %.c 
-	gcc -c $< -o $@
+	gcc $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJ) $(COBJ)
