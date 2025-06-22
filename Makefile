@@ -15,7 +15,9 @@ CSRC = main.c
 HEADER = libasm.h
 COBJ = $(CSRC:.c=.o)
 
-all: $(LIB_NAME) $(COBJ) $(HEADER)
+all: $(NAME) 
+
+$(NAME): $(LIB_NAME) $(COBJ) $(HEADER)
 	gcc $(COBJ) -L. -lasm -o $(NAME)
 
 $(LIB_NAME): $(OBJ)
