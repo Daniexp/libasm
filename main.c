@@ -114,72 +114,74 @@ int openError(int *fds)
 	int error = 0;
 	if (!fds)
 		error = 1;
-	for (int i = 0; i <= 2 && !error; i++)
+	for (int i = 0; !error && fds[i]; i++)
 		if (fds[i] == -1)
 			error = 1;
 	return error;
 }
 
-int *closeTestFiles(int *fds, int len)
+int *closeTestFiles(int *fds)
 {
 	if (!fds)
 		return fds;
-	for (int j = 0; j < len; j++)
-		close(fds[j]);
+	for (int i = 0; fds[i]; i++)
+		close(fds[i]);
 	free(fds);
 	fds = NULL;
 	return fds;
 }
 
-void	deleteTestFiles(char **filenames, int len)
+void	deleteTestFiles(char **filenames)
 {
-	for (int i = 0; i < len; i++)
+	for (int i = 0; filenames[i]; i++)
 		remove(filenames[i]);
 }
 
-int	*startTestFiles(char **filenames, int len)
+int	*startTestFiles(char **filenames)
 {
-	int *fds = malloc(len);
-	for (int i = 0; i < len; i++)
-		fds[i] = -1;
+	int *fds = NULL;
+	if (!filenames)
+		return fds;
+	int len = 0;
+	while (filenames[len++]);
+
+	fds = malloc(len);
+	
 	if (fds && filenames)
 	{
 		fds[0] = open(filenames[0], O_RDONLY | O_CREAT | O_APPEND, 0644);
 		fds[1] = open(filenames[1], O_WRONLY | O_CREAT | O_APPEND, 0644);
 		fds[2] = open(filenames[2], O_RDWR | O_CREAT | O_APPEND, 0644);
-		/*
-		fds[0] = open("read.txt", O_RDONLY | O_CREAT | O_APPEND, 0644);
-		fds[1] = open("write.txt", O_WRONLY | O_CREAT | O_APPEND, 0644);
-		fds[2] = open("readWrite.txt", O_RDWR | O_CREAT | O_APPEND, 0644);
-		*/
-	}
-	if (openError(fds))
-	{
-		fds = closeTestFiles(fds, len);
-		deleteTestFiles(filenames, len);
+		fds[3] = open(filenames[3], O_RDONLY | O_CREAT | O_APPEND, 0644);
+		fds[4] = open(filenames[4], O_WRONLY | O_CREAT | O_APPEND, 0644);
+		fds[5] = open(filenames[5], O_RDWR | O_CREAT | O_APPEND, 0644);
+		if (openError(fds))
+		{
+			fds = closeTestFiles(fds);
+			deleteTestFiles(filenames);
+		}
 	}
 	return fds;
 }
-int main() {
-	/*
-	int fd = open("textRead.txt", O_RDWR | O_APPEND | O_CREAT, 0644);
-	printf("fd: %d", fd);
-	char *buff = malloc(100);
-	buff[99] = '\0';
-	read(fd, buff, 100);
-	printf("%s", buff);
-	*/
 
-	int files = 3;
-	char *filenames[] = {"read.txt", "write.txt", "readWrite.txt"};
-	int *fds = startTestFiles(filenames, files);
+int	setFilesPosition(int *fds, int whence)
+{
+	int error = 0;
+	for (int i = 0; !error && fds[i]; i++)
+	{
+		if (lseek(fds[i], 0, whence) < 0)
+			error = -1;
+	}
+	return error;
+		
+}
+
+int main() {
+
+	char *filenames[] = {"read.txt", "write.txt", "readWrite.txt", "read2.txt", "write2.txt", "readWrite2.txt", NULL};
+	int *fds = startTestFiles(filenames);
 	if (!fds)
 		return printf("Issue creating test files\n"), 1;
-	char *filenamesDup[] = {"read2.txt", "write2.txt", "readWrite2.txt"};
-	int *fds2 = startTestFiles(filenamesDup, files);
-	if (!fds2)
-		return closeTestFiles(fds, files), printf("Issue opening duplicate test files\n"), 1;
-	printf("%d %d %d %d %d %d\n", fds[0], fds[1], fds[2], fds2[0], fds2[1], fds2[2]);
 	/*
 	//Test strlen
 	test_strlen("Hello, World!");
@@ -199,18 +201,16 @@ int main() {
 	test_write(0, 0, "Hello, World!", ft_strlen("Hello, World!"));
 	test_write(-1, -1, "Hello, World!", ft_strlen("Hello, World!"));
 	*/
-	/*
-	test_write(fds[0], fds2[0], "Hello, World!", ft_strlen("Hello, World!"));
-	test_write(fds[1], fds2[1], "Hello, World!", ft_strlen("Hello, World!"));
-	*/
-	test_write(fds[2], fds2[2], "Hello, World!", 13);
+	test_write(fds[0], fds[3], "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(fds[1], fds[4], "Hello, World!", ft_strlen("Hello, World!"));
+	test_write(fds[2], fds[5], "Hello, World!", 13);
+
+	setFilesPosition(fds, SEEK_SET);
 
 	//Test read
-	/*
-	test_read(fds[0], fds2[0], 20, 5);
-	test_read(fds[1], fds2[1], 20, 5);
-	*/
-	test_read(fds[2], fds2[2], 20, 5);
+	test_read(fds[0], fds[3], 20, 5);
+	test_read(fds[1], fds[4], 20, 5);
+	test_read(fds[2], fds[5], 20, 5);
 	/*
 	test_read(fds[2], fds2[2], 5, 5);
 	test_read(fds[2], fds2[2], 50, 10);
@@ -224,10 +224,9 @@ int main() {
 	printf("Copied String: %s", strCpy);
 	free(strCpy);
 	*/
-	closeTestFiles(fds, files);
-//	deleteTestFiles(filenames, files);
-	closeTestFiles(fds2, files);
-//	deleteTestFiles(filenamesDup, files);
+
+	closeTestFiles(fds);
+	deleteTestFiles(filenames);
 
 	return 0;
 }
