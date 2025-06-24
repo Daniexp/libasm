@@ -12,7 +12,8 @@ ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
 OBJ = $(ASM_SRC:.s=.o)
 C_DIR = src
 CSRC = main.c \
-       utils.c
+       utils.c \
+       test.c
 C_SRC= $(addprefix $(C_DIR)/, $(CSRC))
 CFLAGS = -Wextra -Werror -Wall -lasm -L. -Iinc
 COBJ = $(C_SRC:.c=.o)
