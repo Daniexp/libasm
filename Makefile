@@ -1,7 +1,6 @@
 NAME = test
 LIB_NAME = libasm.a
-SRC =	helloWorld.s \
-	ft_strlen.s \
+SRC =	ft_strlen.s \
 	ft_strcpy.s  \
 	ft_strcmp.s \
 	ft_write.s \
@@ -11,15 +10,17 @@ SRC =	helloWorld.s \
 ASM_DIR = asm
 ASM_SRC= $(addprefix $(ASM_DIR)/, $(SRC))
 OBJ = $(ASM_SRC:.s=.o)
-CSRC = main.c
-HEADER = libasm.h
-CFLAGS = -Wextra -Werror -Wall
-COBJ = $(CSRC:.c=.o)
+C_DIR = src
+CSRC = main.c \
+       utils.c
+C_SRC= $(addprefix $(C_DIR)/, $(CSRC))
+CFLAGS = -Wextra -Werror -Wall -lasm -L. -Iinc
+COBJ = $(C_SRC:.c=.o)
 
 all: $(NAME) 
 
-$(NAME): $(LIB_NAME) $(COBJ) $(HEADER)
-	gcc $(CFLAGS) $(COBJ) -L. -lasm -o $(NAME)
+$(NAME): $(LIB_NAME) $(COBJ)
+	gcc $(CFLAGS) $(COBJ) $(LIB_NAME) -o $(NAME)
 
 $(LIB_NAME): $(OBJ)
 	ar rcs $@ $^
